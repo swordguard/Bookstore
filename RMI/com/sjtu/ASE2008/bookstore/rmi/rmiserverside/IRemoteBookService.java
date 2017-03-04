@@ -1,0 +1,87 @@
+/** the remote service of rmi server side for book
+ * It defines several remote functions for the rmi client side as the web
+ * service client side.
+ * It directly deals with both the web service server side and the rmi client
+ * side.
+ *
+ * @author Steve Sun
+ * 2008-7-18
+ * updated on 2008-7-31
+ */
+
+package com.sjtu.ASE2008.bookstore.rmi.rmiserverside;
+
+import com.sjtu.ASE2008.bookstore.domain.*;
+import com.sjtu.ASE2008.bookstore.Composite.*;
+import java.rmi.Remote;
+import java.rmi.RemoteException;
+import java.util.List;
+
+public interface IRemoteBookService
+    extends Remote {
+  public List viewUsers() throws RemoteException;
+
+  public List getUserByName(String username) throws RemoteException;
+  
+  public int updateUserInfo(User user) throws RemoteException;
+
+  public int register(User user) throws RemoteException;
+
+  public int login(String username, String password) throws RemoteException;
+  
+  public int updateDate(String column1,String column2, String table, String value) throws RemoteException;
+
+  //returns List type inorder to be Transferable through web service7
+  public List createShoppingcart() throws RemoteException;
+
+  public int PersistShoppingcart(IItem item) throws RemoteException;
+
+  public int PersistShoppingcartItem(ShoppingcartItem item) throws RemoteException;
+
+  public int removeShopppingcartByUser(String username) throws RemoteException;
+
+  public int removeShopppingcartItemByUser(String username) throws RemoteException;
+
+  public List viewAllOrderItems() throws RemoteException;
+
+  public List viewOrderItemsByUser(String username) throws RemoteException;
+
+  public List viewOrderItemsByOrderid(String Orderid) throws RemoteException;
+
+  public List viewOrderByOrderid(String orderid) throws RemoteException;
+  
+  public List viewOrderByUser(String username) throws RemoteException;
+  
+  public List searchByTitle(String title) throws RemoteException;
+
+  //public List makeOrder(Shoppingcart cart) throws RemoteException;
+
+	public int saveOrderToDB(Order order) throws RemoteException;
+
+	public int saveOrderItemToDB(OrderItem item) throws RemoteException;
+  /**gets the latest few books Object, the number of which is specified
+   * by the int type Parameter
+   *
+   * @param number number of latest books
+   * @return a List of the Book objects
+   * @throws RemoteException
+   */
+
+  //public List getLatestBooks(int number) throws RemoteException;
+  public List getLatestTitles(int number) throws RemoteException;
+
+  public boolean doesItExist(String column, String table, String value) throws
+      RemoteException;
+
+  public List getBookByTitle(String title) throws RemoteException;
+
+  public List getAllCatagories() throws RemoteException;
+
+  public List getAllTitles() throws RemoteException;
+
+  public int addBook(Book book) throws RemoteException;
+
+  public int removeBookByTitle(String title) throws RemoteException;
+
+  public int updateBookInfo(Book book) throws RemoteException;
+}

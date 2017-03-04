@@ -1,0 +1,290 @@
+/**
+ * 数据库连接池
+ * It really deals with derby database whose driver and connection arguments are
+ * specified in the DatabaseServersConfig.xml file.
+ *
+ * @author steve sun
+ * 2008-7-14
+ */
+package com.sjtu.ASE2008.bookstore.DBPool;
+
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.Timer;
+import java.util.*;
+
+public class DBConnectionPool
+    implements TimerListener {
+
+  private Connection con = null;
+  private int inUsed = 0; //
+  private ArrayList freeConnections = new ArrayList(); 
+  private int minConn; //
+  private int maxConn; //
+  private String name; //
+  private String password; //
+  private String url; //
+  private String driver; //
+  private String user; //
+  public Timer timer; //
+
+  public DBConnectionPool() {
+    // TODO Auto-generated constructor stub
+  }
+
+  /**
+   * 创建连接池
+   * @param driver
+   * @param name
+   * @param URL
+   * @param user
+   * @param password
+   * @param maxConn
+   */
+  public DBConnectionPool(String name, String driver, String URL, String user,
+                          String password, int maxConn) {
+    this.name = name;
+    this.driver = driver;
+    this.url = URL;
+    this.user = user;
+    this.password = password;
+    this.maxConn = maxConn;
+  }
+
+  /**
+   * 用完，释放连接，并通知其他线程
+   * @param con
+   */
+  public synchronized void freeConnection(Connection con) {
+    this.freeConnections.add(con); 
+    this.inUsed--;
+    notifyAll();
+    System.out.println("释放连接，并且已经通知其他线程。");
+    System.out.println("还有" + inUsed + "个连接在使用中!");
+  }
+
+  /**
+   * 从连接池获得一个可用连接.如没有空闲的连接且当前连接数小于最大连接 数限制,则创建新连接.
+   * 如原来登记为可用的连接不再有效,则从向量删除之,
+   * 然后递归调用自己以尝试新的可用连接.
+   */
+
+  public synchronized Connection getConnection() {
+    Connection con = null;
+    if (this.freeConnections.size() > 0) {
+      con = (Connection)this.freeConnections.get(0); // 获取向量中第一个可用连接
+      this.freeConnections.remove(0); //
+      if (con == null) {
+        con = getConnection(); //继续获得连接
+      }
+    }
+    else {
+      con = newConnection(); //没有空闲的连接则新建连接
+    }
+    if (this.maxConn == 0 || this.maxConn < this.inUsed) {
+      con = null; //等待 超过最大连接时
+    }
+    if (con != null) {
+      this.inUsed++;
+      System.out.println("得到　" + this.name + "　的一个连接，现有" + inUsed + "个连接在使用!");
+    }
+    return con;
+  }
+
+  /**
+   * 从连接池获取可用连接.可以指定客户程序能够等待的最长时间 参见前一个getConnection()方法.
+   * @param timeout以毫秒计的等待时间限制
+   */
+  public synchronized Connection getConnection(long timeout) {
+    long startTime = new Date().getTime();
+    Connection con = null;
+    while ( (con = getConnection()) == null) {
+      try {
+        wait(timeout);
+      }
+      catch (InterruptedException e) {
+        e.printStackTrace();
+      }
+      if ( (new Date().getTime() - startTime) >= timeout) { // wait()返回的原因是超时
+        System.out.println("获取连接超时！");
+        return null;
+      }
+    }
+
+    if (con != null) {
+      this.inUsed++;
+      System.out.println("得到　" + this.name + "　的一个连接，现有" + inUsed + "个连接在使用!");
+    }
+    return con;
+  }
+
+  /*
+      if(this.freeConnections.size()>0){
+      con=(Connection)this.freeConnections.get(0);
+      this.freeConnections.remove(0);//如果连接分配出去了，就从空闲连接里删
+      if(con==null){
+      con=getConnection(timeout); //继续获得连接
+      }
+      }else{
+      con=newConnection(); //新建连接
+      }
+      if(this.maxConn==0||this.maxConn<this.inUsed){
+      con = null;//达到最大连接数，暂时不能获得连接了。
+      }
+      if(con!=null){
+      this.inUsed++;
+      }
+      return con;
+      }
+   */
+
+  /**
+   *释放全部连接
+   *
+   */
+  public synchronized void release() {
+    Iterator allConns = this.freeConnections.iterator();
+    while (allConns.hasNext()) {
+      Connection con = (Connection) allConns.next();
+      try {
+        con.close();
+        System.out.println("关闭连接池" + name + "中的一个连接");
+      }
+      catch (Exception e) {
+        e.printStackTrace();
+      }
+    }
+    this.freeConnections.clear();
+  }
+
+  /**
+   * 创建新连接
+   * @return Connection
+   */
+  private Connection newConnection() {
+    try {
+      Class.forName(driver);
+      con = DriverManager.getConnection(url, user, password);
+      System.out.println("连接池" + name + "创建一个新连接");
+    }
+    catch (ClassNotFoundException e) {
+      e.printStackTrace();
+      System.out.println("sorry can't find db driver!");
+      return null;
+    }
+    catch (SQLException e1) {
+      e1.printStackTrace();
+      System.out.println("sorry can't create Connection!");
+      return null;
+    }
+    return con;
+  }
+
+  /**
+   * 定时处理函
+   */
+  public synchronized void TimerEvent() {
+    //暂时还没有实现以后会加上的
+  }
+
+  /**
+   * @return the driver
+   */
+  public String getDriver() {
+    return driver;
+  }
+
+  /**
+   * @param driver the driver to set
+   */
+  public void setDriver(String driver) {
+    this.driver = driver;
+  }
+
+  /**
+   * @return the maxConn
+   */
+  public int getMaxConn() {
+    return maxConn;
+  }
+
+  /**
+   * @param maxConn the maxConn to set
+   */
+  public void setMaxConn(int maxConn) {
+    this.maxConn = maxConn;
+  }
+
+  /**
+   * @return the minConn
+   */
+  public int getMinConn() {
+    return minConn;
+  }
+
+  /**
+   * @param minConn the minConn to set
+   */
+  public void setMinConn(int minConn) {
+    this.minConn = minConn;
+  }
+
+  /**
+   * @return the name
+   */
+  public String getName() {
+    return name;
+  }
+
+  /**
+   * @param name the name to set
+   */
+  public void setName(String name) {
+    this.name = name;
+  }
+
+  /**
+   * @return the password
+   */
+  public String getPassword() {
+    return password;
+  }
+
+  /**
+   * @param password the password to set
+   */
+  public void setPassword(String password) {
+    this.password = password;
+  }
+
+  /**
+   * @return the url
+   */
+  public String getUrl() {
+    return url;
+  }
+
+  /**
+   * @param url the url to set
+   */
+  public void setUrl(String url) {
+    this.url = url;
+  }
+
+  /**
+   * @return the user
+   */
+  public String getUser() {
+    return user;
+  }
+
+  /**
+   * @param user the user to set
+   */
+  public void setUser(String user) {
+    this.user = user;
+  }
+}

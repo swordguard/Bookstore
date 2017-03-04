@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<serviceconfig>
+	<webservice>
+		<protocol>http</protocol>
+		<host>localhost</host>
+		<portnumber>8081</portnumber>
+		<servicename>BookstoreFacadeService</servicename>
+		<attr1></attr1>
+		<attr2></attr2>
+	</webservice>
+</serviceconfig>

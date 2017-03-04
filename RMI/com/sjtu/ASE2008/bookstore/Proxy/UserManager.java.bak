@@ -1,0 +1,375 @@
+/**class
+ * provides some service about users
+ *
+ * @author Steve Sun
+ * 2008-8-19
+ */
+package com.sjtu.ASE2008.bookstore.Proxy;
+
+import com.sjtu.ASE2008.bookstore.domain.*;
+import com.sjtu.ASE2008.bookstore.DBPool.*;
+import java.util.*;
+import java.sql.ResultSet;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
+
+public class UserManager {
+  //private User user;
+  public UserManager() {
+  		//System.out.println("==========UM constructor called.");
+  	}
+
+public boolean doesItExist(String value){
+	boolean exist = false;
+    DBConnectionPoolManager dbMan = DBConnectionPoolManager.getInstance();
+    //String poolname = dbMan.getPoolname();
+    Connection conn = dbMan.getConnection();
+    String sql = "select * from users where username="+"'" + value+ "'";
+    PreparedStatement ps = null;
+    ResultSet rs =null;
+    try{
+      ps = conn.prepareStatement(sql);
+      //ps.setString(1,username);
+      //ps.setString(2,password);
+      rs = ps.executeQuery();
+			if(rs.next()) {
+				System.out.println( value + " already exists in users");
+				return true;
+			}
+    }catch (Exception e) {
+      //System.out.println("Adding user to the database failed!");
+      e.printStackTrace();
+    }
+    finally {
+      //dbMan.closeConnection();
+      //dbMan.freeConnection(poolname, conn);
+    }
+    //System.out.println("result=" + result);
+    return exist;
+	
+	
+}
+
+
+
+	public String getNumberOfUsers() {
+    int no = 0;
+
+    DBConnectionPoolManager dbMan = DBConnectionPoolManager.getInstance();
+    //String poolname = dbMan.getPoolname();
+    Connection conn = dbMan.getConnection();
+    String usersql = "select count(*) from users";
+
+    PreparedStatement ps = null;
+    ResultSet rs = null;
+    
+    try {
+      ps = conn.prepareStatement(usersql);
+      
+      rs = ps.executeQuery();
+      //System.out.println("==========11" + rs.next());
+      while (rs.next()) {
+      	
+      	no++;
+        //System.out.println(users);
+      }
+      rs.close();
+      ps.close();
+    }
+    catch (SQLException e) {
+      e.printStackTrace();
+    }
+    finally {
+      //dbMan.freeConnection(poolname, conn);
+     // dbMan.closeConnection();
+    }
+    return String.valueOf(no);
+  }
+
+
+  public List getUsers() {
+    List users = new ArrayList();
+    
+    DBConnectionPoolManager dbMan = DBConnectionPoolManager.getInstance();
+    //String poolname = dbMan.getPoolname();
+    Connection conn = dbMan.getConnection();
+    //String usersql = "select count(*) as N from app.t";
+		String usersql = "select *  from users";
+    PreparedStatement ps = null;
+    ResultSet rs = null;
+    //System.out.println("===============2= in getUsers() in UM is called");
+    try {
+      ps = conn.prepareStatement(usersql);
+      
+      rs = ps.executeQuery();
+     // System.out.println(rs);
+      if(rs == null) return null;
+     
+     // System.out.println("==========11" + rs.next());
+      while (rs.next()) {
+      	
+      	//System.out.println("==========11"+ rs.getString("username").trim());
+      	String address = String.valueOf(rs.getString("address"));
+      	String zipcode = String.valueOf(rs.getString("zipcode"));
+      	String email = String.valueOf(rs.getString("email"));
+      	String telephone = String.valueOf(rs.getString("telephone"));
+      	String badmin = String.valueOf(rs.getString("badmin"));
+      	String lastupdatedate = String.valueOf(rs.getString("lastupdatedate"));
+      	String registerdate = String.valueOf(rs.getString("registerdate"));
+      	String lastlogindate = String.valueOf(rs.getString("lastlogindate"));
+      	String lastloginTime = String.valueOf(rs.getString("lastloginTime"));
+      	//String lastupdatedate = String.valueOf(rs.getDate("lastupdatedate"));
+      	
+      	if(address == null)address="";
+      	if(zipcode == null)zipcode="";
+      	if(email == null)email="";
+      	if(telephone == null)telephone="";
+      	if(badmin == null)badmin="";
+      	if(registerdate == null)registerdate="";
+      	if(lastlogindate == null)lastlogindate="";
+      	if(lastloginTime == null)lastloginTime="";
+      	if(lastupdatedate == null)lastupdatedate="";
+      	//System.out.println("==========1" + rs.getString("username").trim());
+        User user = new User();
+        user.setUsername(rs.getString("username").trim());
+        user.setPassword(rs.getString("password"));
+        user.setFirstname(rs.getString("firstname").trim());
+        user.setLastname(rs.getString("lastname").trim());
+        user.setAddress(address);
+        user.setZipcode(zipcode);
+        user.setEmail(email);
+        user.setTelephone(telephone);
+        user.setBadmin(badmin);
+        
+        user.setRegisterdate(registerdate);
+        user.setLastlogindate(lastlogindate);
+        user.setLastlogintime(lastloginTime);
+        user.setLastupdatedate(lastupdatedate);
+        users.add(user);
+        //System.out.println(users);
+        
+      }
+      rs.close();
+      ps.close();
+    }
+    catch (SQLException e) {
+      e.printStackTrace();
+    }
+    finally {
+      //dbMan.freeConnection(poolname, conn);
+      //dbMan.closeConnection();
+    }
+    return users;
+  }
+
+  public List getUserByName(String username) {
+    List userlist = new ArrayList();
+    User user = null;
+
+    DBConnectionPoolManager dbMan = DBConnectionPoolManager.getInstance();
+    //String poolname = dbMan.getPoolname();
+    Connection conn = dbMan.getConnection();
+    String usersql = "select * from users where username = ?";
+
+    PreparedStatement ps = null;
+    ResultSet rs = null;
+    try {
+      ps = conn.prepareStatement(usersql);
+      ps.setString(1, username);
+      //System.out.println(booksql);
+      rs = ps.executeQuery();
+      while (rs.next()) {
+        user = new User();
+        user.setUsername(rs.getString("username").trim());
+        user.setFirstname(rs.getString("firstname").trim());
+        user.setLastname(rs.getString("lastname").trim());
+        user.setAddress(rs.getString("address").trim());
+        user.setZipcode(rs.getString("zipcode").trim());
+        user.setEmail(rs.getString("email").trim());
+        user.setTelephone(rs.getString("telephone").trim());
+        user.setBadmin(String.valueOf(rs.getString("badmin")));
+        user.setRegisterdate(String.valueOf(rs.getString("registerdate")));
+        user.setLastlogindate(String.valueOf(rs.getString("lastlogindate")));
+        user.setLastlogintime(String.valueOf(rs.getString("lastlogintime")));
+        user.setLastupdatedate(String.valueOf(rs.getString("lastupdatedate")));
+        userlist.add(user);
+      }
+      rs.close();
+      ps.close();
+    }
+    catch (SQLException e) {
+      e.printStackTrace();
+    }
+    finally {
+      //dbMan.freeConnection(poolname, conn);
+     // dbMan.closeConnection();
+    }
+    return userlist;
+  }
+
+  public int register(User user) {
+    int result = -1;
+    DBConnectionPoolManager dbMan = DBConnectionPoolManager.getInstance();
+    //String poolname = dbMan.getPoolname();
+    Connection conn = dbMan.getConnection();
+
+    String sql = "insert into users(USERNAME, PASSWORD, FIRSTNAME, LASTNAME, ADDRESS, ZIPCODE, EMAIL, TELEPHONE,badmin,registerdate,lastlogindate,lastlogintime, lastupdatedate) values(?,?,?,?,?,?,?,?,?,current_timestamp,current_date,current_time,CURRENT_TIMESTAMP)";
+
+    PreparedStatement ps = null;
+
+    int line1 = -1;
+
+    try {
+      ps = conn.prepareStatement(sql);
+      ps.setString(1,user.getUsername());
+      ps.setString(2,user.getPassword());
+      ps.setString(3,user.getFirstname());
+      ps.setString(4,user.getLastname());
+      ps.setString(5,user.getAddress());
+      ps.setString(6,user.getZipcode());
+      ps.setString(7,user.getEmail());
+      ps.setString(8,user.getTelephone());
+      ps.setString(9,user.getBadmin());
+
+      line1 = ps.executeUpdate();
+      if ( line1 != 1) {
+        ps.close();
+        conn.rollback();
+        return result;
+      }
+      result = 1;
+      System.out.println("The user " + user.getUsername() +
+                         " has been successfully added to the database!");
+      ps.close();
+    }
+    catch (Exception e) {
+      System.out.println("Adding user to the database failed!");
+      e.printStackTrace();
+    }
+    finally {
+      //dbMan.closeConnection();
+      //dbMan.freeConnection(poolname, conn);
+    }
+    return result;
+  }
+
+  public int login(String username, String password) {
+    int result = -1;
+    DBConnectionPoolManager dbMan = DBConnectionPoolManager.getInstance();
+    //String poolname = dbMan.getPoolname();
+    Connection conn = dbMan.getConnection();
+    String sql = "select * from users where username="+"'" + username+ "'"+" and password="+"'" + password+ "'";
+    PreparedStatement ps = null;
+    ResultSet rs =null;
+    try{
+      ps = conn.prepareStatement(sql);
+      //ps.setString(1,username);
+      //ps.setString(2,password);
+      rs = ps.executeQuery();
+      while(rs.next()){
+      	//System.out.println("111   "  + rs.getInt("userid"));
+        result = 1;
+        if(rs.getString("badmin").equals("1")){
+          result = 2;//return system admin
+        }
+        System.out.println(username + " logged in");
+      }
+    }catch (Exception e) {
+      //System.out.println("Adding user to the database failed!");
+      e.printStackTrace();
+    }
+    finally {
+      //dbMan.closeConnection();
+      //dbMan.freeConnection(poolname, conn);
+    }
+    
+    return result;
+  }
+
+
+
+	public int updateUserInfo(User user) {
+    int result = -1;
+    DBConnectionPoolManager dbMan = DBConnectionPoolManager.getInstance();
+    /*
+    SimpleDateFormat format = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
+		Date now = new Date();
+		String current_date = format.format(now);
+    */
+    Connection conn = dbMan.getConnection();
+    /*
+    String sql1 = "update books set authors='" + book.getAuthors() + "',ISBN='" + book.getISBN() +
+        "', publisher='" + book.getPublisher() + "', description='" + book.getDescription() +
+        "',stockdate='"+current_date+"', catagoryname='" + book.getCatagoryname() + "' where title='" +book.getTitle() + "'";
+  	USERNAME, PASSWORD, FIRSTNAME, LASTNAME, ADDRESS, ZIPCODE, EMAIL, TELEPHONE,badmin,registerdate,lastlogindate,lastlogintime, lastupdatedate*/
+  	String sql = "update users set PASSWORD=?, FIRSTNAME=?, LASTNAME=?,ADDRESS=?, zipcode=?, email=?,"
+  						+ " telephone=?, badmin=?, registerdate=current_timestamp, lastlogindate=current_date,lastlogintime=current_time,"
+  						+ " lastupdatedate=current_date where username=?";
+    PreparedStatement ps = null;
+    int line1 = -1;
+    try {
+      ps = conn.prepareStatement(sql);
+      ps.setString(1,user.getPassword());
+         ps.setString(2,user.getFirstname());
+         ps.setString(3,user.getLastname());
+         ps.setString(4,user.getAddress());
+         ps.setString(5,user.getZipcode());
+         ps.setString(6,user.getEmail());
+         ps.setString(7,user.getTelephone());
+         ps.setString(8,user.getBadmin());
+         ps.setString(9,user.getUsername());
+         //ps.setString(1,book.getTitle());
+      line1 = ps.executeUpdate();
+      if ( line1 != 1) {
+      	System.out.println("updating<" + user.getUsername() +"> user to the database may fail!");
+        ps.close();
+        return result;
+      }
+      result = 1;
+      System.out.println("The user <" + user.getUsername() +
+                         "> has been successfully updated to the database!");
+      ps.close();
+    }
+    catch (Exception e) {
+      System.out.println("updating<" + user.getUsername() +"> user to the database failed!");
+      e.printStackTrace();
+    }
+    finally {
+      //dbMan.freeConnection(poolname, conn);
+    }
+
+    return result;
+  }
+
+
+	
+	public int updateDate(String column1,String column2, String table,String value) {
+    int result = -1;
+    DBConnectionPoolManager dbMan = DBConnectionPoolManager.getInstance();
+    //String poolname = dbMan.getPoolname();
+    Connection conn = dbMan.getConnection();
+    String sql = "update " + table + " set " + column1 + "=current_date ," + column2 + "=current_time where username = ?";
+    PreparedStatement ps = null;
+    //ResultSet rs =null;
+    try{
+      ps = conn.prepareStatement(sql);
+      ps.setString(1,value);
+      if(ps.executeUpdate() != 1){
+      	conn.rollback();
+      	return result;
+      }
+      result = 1;
+    }catch (Exception e) {
+      //System.out.println("Adding user to the database failed!");
+      e.printStackTrace();
+    }
+    finally {
+      //dbMan.closeConnection();
+      //dbMan.freeConnection(poolname, conn);
+    }
+    //System.out.println("result=" + result);
+    return result;
+  }
+
+}

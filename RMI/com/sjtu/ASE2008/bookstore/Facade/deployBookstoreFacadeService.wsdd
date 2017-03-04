@@ -1,0 +1,12 @@
+<deployment xmlns="http://xml.apache.org/axis/wsdd/" xmlns:java="http://xml.apache.org/axis/wsdd/providers/java">
+	<service name="BookstoreFacadeService" provider="java:RPC">
+		<parameter name="className" value="com.sjtu.ASE2008.bookstore.Facade.BookstoreFacadeService"/>
+		<parameter name="allowedMethods" value="*"/>
+		<!--
+		<beanMapping languageSpecificType="java:com.sjtu.ASE2008.bookstore.domain.Book" qname="ns1:Book" xmlns:ns1="urn:BookstoreFacadeService"/>
+		<beanMapping languageSpecificType="java:com.sjtu.ASE2008.bookstore.domain.Order" qname="ns1:Order" xmlns:ns1="urn:BookstoreFacadeService"/>
+		<beanMapping languageSpecificType="java:com.sjtu.ASE2008.bookstore.domain.OrderItem" qname="ns1:OrderItem" xmlns:ns1="urn:BookstoreFacadeService"/>
+		<beanMapping languageSpecificType="java:com.sjtu.ASE2008.bookstore.domain.User" qname="ns1:User" xmlns:ns1="urn:BookstoreFacadeService"/>
+		-->
+	</service>
+</deployment>

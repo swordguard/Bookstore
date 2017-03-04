@@ -1,0 +1,19 @@
+package com.sjtu.ASE2008.bookstore.Facade;
+
+
+import java.util.*;
+
+public class DerbyTest{
+	
+	
+	public static void main(String args[]){
+		
+		
+		List title = new ArrayList();
+		BookstoreFacadeService facade = new BookstoreFacadeService();
+		title = facade.viewUsers();
+		///int r = facade.login(username,password);
+		System.out.println(title.size());
+	}
+	
+}
