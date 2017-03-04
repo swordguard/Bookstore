@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<serviceconfig>	
+	<rmiservice>
+		<protocol>rmi</protocol>
+		<host>172.23.68.22</host>
+		<portnumber>1099</portnumber>
+		<servicename>BookService_RMIServer</servicename>
+		<attr1></attr1>
+		<attr2></attr2>
+	</rmiservice>
+	
+</serviceconfig>
