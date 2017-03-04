@@ -1,8 +1,11 @@
-½«DatabaseServersConfig.xmlÖÃÓÚweb service ·şÎñÆ÷A µÄ %tomcat%\bin\com\sjtu\ASE2008\bookstoreÄ¿Â¼ÏÂ¡£
+put DatabaseServersConfig.xml into web service %tomcat%\bin\com\sjtu\ASE2008\bookstore\
 
-//½«DatabaseServersConfig.xmlÖĞµÄ<host>ÉèÎª·şÎñÆ÷AµÄIPµØÖ·¡£
+config IP address of the webservice server by editting <host> in DatabaseServersConfig.xml 
 
-½«rmi_config.xmlºÍwebservice_config.xmlÖÃÓÚRMI ·şÎñÆ÷B µÄcom\sjtu\ASE2008\bookstoreÄ¿Â¼ÏÂ¡£½«webservice_config.xmlÖĞµÄ<host>ÉèÎª·şÎñÆ÷AµÄIPµØÖ·,½«rmi_config.xmlÖĞµÄ<host>¸ÄÎª·şÎñÆ÷BµÄIPµØÖ·¡£
+put rmi_config.xml and webservice_config.xml in to RMI service folder com\sjtu\ASE2008\bookstore\
 
-Í¬Ê±½«rmi_config.xmlÖÃÓÚMVC·şÎñÆ÷CµÄ %tomcat%\bin\com\sjtu\ASE2008\bookstoreÄ¿Â¼ÏÂ¡£½«rmi_config.xmlÖĞµÄ<host>ÉèÎª·şÎñÆ÷BµÄIPµØÖ·
+config ws service's server IP address in webservice_config.xml by <host>
+config RMI service's server IP address in rmi_config.xmlä¸­ by <host>
 
+also put rmi_config.xml into App's server %tomcat%\bin\com\sjtu\ASE2008\bookstore\
+and config rmi_config.xml by editting IP address
