@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+
+
+<ds-config>
+	<pool>
+		<type>derby</type>
+		<name>bookstoreDBPool</name>
+		<driver>org.apache.derby.jdbc.EmbeddedDriver</driver>
+		<url>jdbc:derby:bookstoreDB;create=true</url>
+		<username></username>
+		<password></password>
+		<maxconn>40</maxconn>
+	</pool>
+<!--	
+<!DOCTYPE web-app PUBLIC
+	"-//Sun Microsystems, Inc.//DTD Web Application 2.3//EN"
+	"http://java.sun.com/dtd/web-app_2_3.dtd">
+
+<pool>
+		<type>mysql</type>
+		<name>user</name>
+		<driver>com.mysql.jdbc.driver</driver>
+		<url>jdbc:mysql://localhost:3306/user</url>
+		<username>sa</username>
+		<password>123456</password>
+		<maxconn>100</maxconn>
+	</pool>
+	<pool>
+		<type>mysql</type>
+		<name>user2</name>
+		<driver>com.mysql.jdbc.driver</driver>
+		<url>jdbc:mysql://localhost:3306/user2</url>
+		<username>sa</username>
+		<password>1234</password>
+		<maxconn>10</maxconn>
+	</pool>
+	<pool>
+		<type>sql2000</type>
+		<name>books</name>
+		<driver>com.microsoft.sqlserver.driver</driver>
+		<url>jdbc:sqlserver://localhost:1433/books:databasename=books</url>
+		<username>sa</username>
+		<password></password>
+		<maxconn>100</maxconn>
+	</pool>
+-->
+</ds-config>
